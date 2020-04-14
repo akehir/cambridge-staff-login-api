@@ -30,7 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: '#/components/schemas/ResponseLogin'
       operationId: get-STAFFValidateLogin
       parameters:
         - schema:
@@ -47,6 +47,10 @@ paths:
           required: true
         - schema:
             type: string
+            enum:
+              - EN
+              - DE
+              - FR
           in: query
           name: Language
           required: true
@@ -55,17 +59,45 @@ paths:
           in: query
           name: APIKey
           required: true
+      requestBody: {}
     parameters: []
   /STEmailAvailabilityRecord:
     get:
       summary: Your GET endpoint
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEmailAvailabilityRecord'
       operationId: get-STEmailAvailabilityRecord
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      requestBody: {}
 components:
   schemas:
-    LoginResponse:
-      title: LoginResponse
+    ResponseLogin:
+      title: ResponseLogin
       type: object
       description: The Response of the Login Call
       properties:
@@ -98,18 +130,23 @@ components:
     PersonalInformation:
       title: PersonalInformation
       type: object
+      description: The data returned / set for any given user
       properties:
         UserLoginZ:
           type: string
-        LoginFirstName:
+        FirstName:
           type: string
-        LoginLastName:
+        LastName:
           type: string
-        LoginEMail:
+        EMail:
           type: string
           format: email
         Country:
           type: string
+          enum:
+            - Switzerland
+            - France
+            - Germany
         City:
           type: string
         PostCode:
@@ -138,39 +175,238 @@ components:
           type: boolean
       required:
         - UserLoginZ
-        - LoginFirstName
-        - LoginLastName
-        - LoginEMail
+        - FirstName
+        - LastName
+        - EMail
         - WrittenExaminer
         - OralExaminer
-      description: The data returned / set for any given user
-    Deployments:
-      title: Deployments
+    Deployment:
+      title: Deployment
       type: object
       properties:
         id:
           type: string
-    Availabilities:
-      title: Availabilities
+    Availability:
+      title: Availability
+      type: object
+      description: 'The availability record, where an examineer can either indicate to be available, or not.'
+      properties:
+        AvailabilityDate:
+          type: string
+        AM:
+          type: boolean
+        PM:
+          type: boolean
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        AvailabilityDateISO:
+          type: string
+      required:
+        - AvailabilityDate
+        - AM
+        - PM
+        - Id
+        - AvailabilityDateISO
+    ClaimExam:
+      title: ClaimExam
       type: object
       properties:
-        id:
+        Id:
           type: string
-    ExamClaims:
-      title: ExamClaims
+          description: 'ID = 0 => New Object'
+        UserData:
+          $ref: '#/components/schemas/ClaimPersonalInfo'
+        MiscellaneousClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimMisc'
+        Comment:
+          type: string
+        DeploymentClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimDeployment'
+      required:
+        - Id
+        - UserData
+        - MiscellaneousClaims
+        - Comment
+        - DeploymentClaims
+    ClaimCoordination:
+      title: ClaimCoordination
       type: object
       properties:
-        id:
+        Id:
           type: string
-    CoordinationClaims:
-      title: CoordinationClaims
+          description: id 0 = new
+        UserData:
+          $ref: '#/components/schemas/ClaimPersonalInfo'
+        MiscellaneousClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimMisc'
+        Comment:
+          type: string
+        CoordinationMeetingClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimCoordinationMeeting'
+      required:
+        - Id
+        - UserData
+        - MiscellaneousClaims
+        - Comment
+        - CoordinationMeetingClaims
+    Certification:
+      title: Certification
+      type: object
+      description: The certification of an examiner
+      properties:
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        ExamLevel:
+          type: string
+        TrainingDate:
+          type: string
+        TrainingDateISO:
+          type: string
+        Active:
+          type: boolean
+        CoordinationDate:
+          type: string
+        CoordinationDateISO:
+          type: string
+      required:
+        - Id
+        - ExamLevel
+        - TrainingDate
+        - TrainingDateISO
+        - Active
+        - CoordinationDate
+        - CoordinationDateISO
+    ResponseEmailAvailabilityRecord:
+      title: ResponseEmailAvailabilityRecord
+      type: object
+      description: The Response of the Email Availability Record
+      properties:
+        Status:
+          $ref: '#/components/schemas/StatusCode'
+        ErrorText:
+          type: string
+          description: ErrorText
+        Data:
+          type: array
+          items:
+            type: 'null'
+      required:
+        - Status
+        - ErrorText
+        - Data
+    ClaimCoordinationMeeting:
+      title: ClaimCoordinationMeeting
       type: object
       properties:
-        id:
+        Id:
           type: string
-    Certifications:
-      title: Certifications
+          description: 'ID = 0 => New Object'
+        CoordinationMeetingDate:
+          type: string
+        CoordinationMeetingDateISO:
+          type: string
+        ExamLevel:
+          type: string
+        ExamName:
+          type: string
+        Claim:
+          type: boolean
+        Lunch:
+          type: boolean
+        Travel:
+          type: number
+      required:
+        - Id
+        - CoordinationMeetingDate
+        - CoordinationMeetingDateISO
+        - ExamLevel
+        - ExamName
+        - Claim
+        - Lunch
+        - Travel
+    ClaimMisc:
+      title: ClaimMisc
       type: object
       properties:
-        id:
+        Id:
           type: string
+          description: 'ID = 0 => New Object'
+        Description:
+          type: string
+        Amount:
+          type: number
+      required:
+        - Id
+        - Description
+        - Amount
+    ClaimPersonalInfo:
+      title: ClaimPersonalInfo
+      type: object
+      properties:
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        FirstName:
+          type: string
+        LastName:
+          type: string
+        AccountNr:
+          type: string
+        ClearingNr:
+          type: string
+        OENr:
+          type: string
+        BankOrPost:
+          type: string
+          description: 'Ex: PC Account'
+      required:
+        - Id
+        - FirstName
+        - LastName
+        - AccountNr
+        - ClearingNr
+        - OENr
+        - BankOrPost
+    ClaimDeployment:
+      title: ClaimDeployment
+      type: object
+      properties:
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        Travel:
+          type: number
+        Lunch:
+          type: number
+        ExamName:
+          type: string
+        ExamLevel:
+          type: string
+        DeploymentDateISO:
+          type: string
+        DeploymentDate:
+          type: string
+        AM:
+          type: number
+        PM:
+          type: number
+      required:
+        - Id
+        - Travel
+        - Lunch
+        - ExamName
+        - ExamLevel
+        - DeploymentDateISO
+        - DeploymentDate
+        - AM
+        - PM
