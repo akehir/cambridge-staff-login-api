@@ -22,7 +22,7 @@ servers:
 paths:
   /STValidateLogin:
     get:
-      summary: Your GET endpoint
+      summary: STValidateLogin
       tags: []
       responses:
         '200':
@@ -63,7 +63,7 @@ paths:
     parameters: []
   /STEmailAvailabilityRecord:
     get:
-      summary: Your GET endpoint
+      summary: STEmailAvailabilityRecord
       tags: []
       responses:
         '200':
@@ -71,7 +71,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseEmailAvailabilityRecord'
+                $ref: '#/components/schemas/ResponseOverviewPage'
+        '':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
       operationId: get-STEmailAvailabilityRecord
       parameters:
         - schema:
@@ -94,6 +99,186 @@ paths:
           name: APIKey
           required: true
       requestBody: {}
+  /STGetOverviewPageInformation:
+    get:
+      summary: STGetOverviewPageInformation
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOverviewPage'
+      operationId: get-STGetOverviewPage
+    parameters:
+      - schema:
+          type: string
+        in: query
+        name: UserLoginZ
+        required: true
+      - schema:
+          type: string
+          enum:
+            - EN
+            - DE
+            - FR
+        in: query
+        name: Language
+        required: true
+      - schema:
+          type: string
+        in: query
+        name: APIKey
+        required: true
+  /STUpdateAvailability:
+    post:
+      summary: STUpdateAvailability
+      operationId: post-STUpdateAvailability
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Availability'
+  /STClaimExams:
+    post:
+      summary: STClaimExams
+      operationId: post-STClaimExams
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ClaimExam'
+  /STClaimCoordination:
+    post:
+      summary: STClaimCoordination
+      operationId: post-STClaimCoordination
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCoordination'
+  /STUpdatePersonalInformation:
+    post:
+      summary: STUpdatePersonalInformation
+      operationId: post-STUpdatePersonalInformation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalInformation'
 components:
   schemas:
     ResponseLogin:
@@ -184,8 +369,34 @@ components:
       title: Deployment
       type: object
       properties:
-        id:
+        Id:
           type: string
+          description: 'ID = 0 => New Object'
+        DeploymentDate:
+          type: string
+        DeploymentDateISO:
+          type: string
+        Time:
+          type: string
+        Type:
+          type: string
+          enum:
+            - Written
+            - Oral
+            - Oral+Written
+        ExamLevel:
+          type: string
+        Function:
+          type: string
+          description: Is this an enum?
+      required:
+        - Id
+        - DeploymentDate
+        - DeploymentDateISO
+        - Time
+        - Type
+        - ExamLevel
+        - Function
     Availability:
       title: Availability
       type: object
@@ -286,24 +497,6 @@ components:
         - Active
         - CoordinationDate
         - CoordinationDateISO
-    ResponseEmailAvailabilityRecord:
-      title: ResponseEmailAvailabilityRecord
-      type: object
-      description: The Response of the Email Availability Record
-      properties:
-        Status:
-          $ref: '#/components/schemas/StatusCode'
-        ErrorText:
-          type: string
-          description: ErrorText
-        Data:
-          type: array
-          items:
-            type: 'null'
-      required:
-        - Status
-        - ErrorText
-        - Data
     ClaimCoordinationMeeting:
       title: ClaimCoordinationMeeting
       type: object
@@ -410,3 +603,58 @@ components:
         - DeploymentDate
         - AM
         - PM
+    ResponseOverviewPage:
+      title: ResponseOverviewPage
+      type: object
+      description: The Response of the Overview Page Call
+      properties:
+        Status:
+          $ref: '#/components/schemas/StatusCode'
+        ErrorText:
+          type: string
+          description: ErrorText
+        Data:
+          type: array
+          items:
+            type: object
+            properties:
+              Certifications:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certification'
+              CoordinationClaim:
+                $ref: '#/components/schemas/ClaimCoordination'
+              ExamClaim:
+                $ref: '#/components/schemas/ClaimExam'
+              Availability:
+                $ref: '#/components/schemas/Availability'
+              Deployment:
+                $ref: '#/components/schemas/Deployment'
+            required:
+              - Certifications
+              - CoordinationClaim
+              - ExamClaim
+              - Availability
+              - Deployment
+      required:
+        - Status
+        - ErrorText
+        - Data
+    ResponseGeneric:
+      title: ResponseGeneric
+      type: object
+      description: The Response of the Email Availability Record
+      properties:
+        Status:
+          $ref: '#/components/schemas/StatusCode'
+        ErrorText:
+          type: string
+          description: ErrorText
+        Data:
+          type: array
+          items:
+            type: 'null'
+      required:
+        - Status
+        - ErrorText
+        - Data
