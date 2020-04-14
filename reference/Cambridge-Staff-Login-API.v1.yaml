@@ -2,9 +2,23 @@ openapi: 3.0.0
 info:
   title: Cambridge Staff Login API
   version: '1.0'
+  contact:
+    name: Raphael Ochsenbein
+    url: 'https://viu.ch'
+    email: ro@viu.ch
 servers:
-  - url: 'http://localhost:3000'
-  - description: ''
+  - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
+    description: TEST_BASEL
+  - url: 'https://esoldataservice.cambridgeenglish-basel.ch:3443/ESOLDataServices.svc'
+    description: PROD_BASEL
+  - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
+    description: TEST_JURA
+  - url: 'https://esoldataservice.cambridgeenglish-basel.ch:3443/ESOLDataServices.svc'
+    description: PROD_JURA
+  - url: 'https://test.esoldataservice.cambridgeesol-ge.ch:6200/ESOLDataServices.svc'
+    description: TEST_GENEVA
+  - url: 'https://esoldataservice.cambridgeesol-ge.ch:6100/ESOLDataServices.svc'
+    description: PROD_GENEVA
 paths:
   /STValidateLogin:
     get:
@@ -16,10 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  '':
-                    type: string
+                $ref: '#/components/schemas/LoginResponse'
       operationId: get-STAFFValidateLogin
       parameters:
         - schema:
@@ -27,20 +38,30 @@ paths:
           in: query
           name: LoginName
           description: Email address
+          required: true
         - schema:
             type: string
           in: query
           name: Password
           description: Password
+          required: true
         - schema:
             type: string
           in: query
           name: Language
+          required: true
         - schema:
             type: string
           in: query
           name: APIKey
+          required: true
     parameters: []
+  /STEmailAvailabilityRecord:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-STEmailAvailabilityRecord
 components:
   schemas:
     LoginResponse:
@@ -53,18 +74,73 @@ components:
           type: string
           description: ErrorText
         Data:
-          type: object
-          properties:
-            '':
-              type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginData'
       required:
         - Status
         - ErrorText
+        - Data
+      description: The Response of the Login Call
     StatusCode:
       type: string
+      enum:
+        - '200'
+        - '201'
+        - '400'
+        - '500'
       description: |-
-        1. A status code and in case of an error a corresponding error message. The StatusCode may be:
+        A status code and in case of an error a corresponding error message. The StatusCode may be:
          200: OK  response for successful request
          201: OK,  Input locked (only for BECandidateSEL)
          400: Bad Request  request cannot be processed due to invalid input parameters
          500: Internal Server Error  unexpected condition was encountered
+    LoginData:
+      title: LoginData
+      type: object
+      properties:
+        UserLoginZ:
+          type: string
+        LoginFirstName:
+          type: string
+        LoginLastName:
+          type: string
+        LoginEMail:
+          type: string
+          format: email
+        Country:
+          type: string
+        City:
+          type: string
+        PostCode:
+          type: string
+        MobilePhone:
+          type: string
+        HomePhone:
+          type: string
+        WorkPhone:
+          type: string
+        BankAccountNr:
+          type: string
+        ClearingNr:
+          type: string
+        OeNr:
+          type: string
+        BankOrPost:
+          type: string
+          description: |
+            Example: PC Account
+        Function:
+          type: string
+        WrittenExaminer:
+          type: boolean
+        OralExaminer:
+          type: boolean
+      required:
+        - UserLoginZ
+        - LoginFirstName
+        - LoginLastName
+        - LoginEMail
+        - WrittenExaminer
+        - OralExaminer
+      description: The data returned by the Login Call
