@@ -32,6 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseLogin'
       operationId: get-STAFFValidateLogin
+      requestBody: {}
       parameters:
         - schema:
             type: string
@@ -59,7 +60,6 @@ paths:
           in: query
           name: APIKey
           required: true
-      requestBody: {}
     parameters: []
   /STEmailAvailabilityRecord:
     get:
@@ -308,10 +308,11 @@ components:
         - '500'
       description: |-
         A status code and in case of an error a corresponding error message. The StatusCode may be:
-         200: OK  response for successful request
-         201: OK,  Input locked (only for BECandidateSEL)
-         400: Bad Request  request cannot be processed due to invalid input parameters
-         500: Internal Server Error  unexpected condition was encountered
+        - 200: OK -> response for successful request
+        - 201: OK, -> Created
+        - 400: Bad Request -> request cannot be processed due to invalid input parameters
+        - 500: Internal Server Error -> unexpected condition was encountered
+      title: StatusCode
     PersonalInformation:
       title: PersonalInformation
       type: object
