@@ -67,6 +67,7 @@ components:
     LoginResponse:
       title: LoginResponse
       type: object
+      description: The Response of the Login Call
       properties:
         Status:
           $ref: '#/components/schemas/StatusCode'
@@ -76,12 +77,11 @@ components:
         Data:
           type: array
           items:
-            $ref: '#/components/schemas/LoginData'
+            $ref: '#/components/schemas/PersonalInformation'
       required:
         - Status
         - ErrorText
         - Data
-      description: The Response of the Login Call
     StatusCode:
       type: string
       enum:
@@ -95,8 +95,8 @@ components:
          201: OK,  Input locked (only for BECandidateSEL)
          400: Bad Request  request cannot be processed due to invalid input parameters
          500: Internal Server Error  unexpected condition was encountered
-    LoginData:
-      title: LoginData
+    PersonalInformation:
+      title: PersonalInformation
       type: object
       properties:
         UserLoginZ:
@@ -143,4 +143,34 @@ components:
         - LoginEMail
         - WrittenExaminer
         - OralExaminer
-      description: The data returned by the Login Call
+      description: The data returned / set for any given user
+    Deployments:
+      title: Deployments
+      type: object
+      properties:
+        id:
+          type: string
+    Availabilities:
+      title: Availabilities
+      type: object
+      properties:
+        id:
+          type: string
+    ExamClaims:
+      title: ExamClaims
+      type: object
+      properties:
+        id:
+          type: string
+    CoordinationClaims:
+      title: CoordinationClaims
+      type: object
+      properties:
+        id:
+          type: string
+    Certifications:
+      title: Certifications
+      type: object
+      properties:
+        id:
+          type: string
