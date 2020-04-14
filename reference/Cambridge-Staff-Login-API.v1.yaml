@@ -1,0 +1,70 @@
+openapi: 3.0.0
+info:
+  title: Cambridge Staff Login API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+  - description: ''
+paths:
+  /STValidateLogin:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '':
+                    type: string
+      operationId: get-STAFFValidateLogin
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: LoginName
+          description: Email address
+        - schema:
+            type: string
+          in: query
+          name: Password
+          description: Password
+        - schema:
+            type: string
+          in: query
+          name: Language
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+    parameters: []
+components:
+  schemas:
+    LoginResponse:
+      title: LoginResponse
+      type: object
+      properties:
+        Status:
+          $ref: '#/components/schemas/StatusCode'
+        ErrorText:
+          type: string
+          description: ErrorText
+        Data:
+          type: object
+          properties:
+            '':
+              type: string
+      required:
+        - Status
+        - ErrorText
+    StatusCode:
+      type: string
+      description: |-
+        1. A status code and in case of an error a corresponding error message. The StatusCode may be:
+         200: OK  response for successful request
+         201: OK,  Input locked (only for BECandidateSEL)
+         400: Bad Request  request cannot be processed due to invalid input parameters
+         500: Internal Server Error  unexpected condition was encountered
