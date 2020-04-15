@@ -32,7 +32,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseLogin'
-      operationId: get-STAFFValidateLogin
+      operationId: get-STValidateLogin
       requestBody: {}
       parameters:
         - schema:
@@ -61,7 +61,7 @@ paths:
           in: query
           name: APIKey
           required: true
-    parameters: []
+      description: Log an user in. Should be post?
   /STEmailAvailabilityRecord:
     get:
       summary: STEmailAvailabilityRecord
@@ -100,7 +100,6 @@ paths:
           in: query
           name: APIKey
           required: true
-      requestBody: {}
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
@@ -214,6 +213,7 @@ paths:
                 $ref: '#/components/schemas/ClaimExam'
       tags:
         - API
+      description: 'Locks in the Exam Claims and '
   /STClaimCoordination:
     post:
       summary: STClaimCoordination
@@ -290,6 +290,82 @@ paths:
               $ref: '#/components/schemas/PersonalInformation'
       tags:
         - API
+  /STResendPassword:
+    get:
+      summary: STResendPassword
+      tags:
+        - API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      operationId: get-STResendPassword
+      requestBody: {}
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: LoginName
+          description: Email address
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      description: 'Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. '
+  /STChangePassword:
+    get:
+      summary: STEmailAvailabilityRecord
+      tags:
+        - API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      operationId: get-STEmailAvailabilityRecord
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: UserLoginZ
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+        - schema:
+            type: string
+            minLength: 6
+          in: query
+          name: Password
+          required: true
+      description: Update the password of an user. Should be POST?
 components:
   schemas:
     ResponseLogin:
@@ -332,6 +408,8 @@ components:
       title: PersonalInformation
       type: object
       description: The data returned / set for any given user
+      x-tags:
+        - Models
       properties:
         UserLoginZ:
           type: string
@@ -358,22 +436,48 @@ components:
           type: string
         WorkPhone:
           type: string
-        BankAccountNr:
+        IBAN:
           type: string
-        ClearingNr:
+          pattern: '[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}'
+        BIC_SWIFT:
           type: string
-        OeNr:
+        OENr:
           type: string
-        BankOrPost:
+          description: Only for Function = Speaking Examiner. Read-Only
+        BankName:
           type: string
           description: |
             Example: PC Account
         Function:
           type: string
+          description: Read Only. Could be Enum.
         WrittenExaminer:
           type: boolean
+          description: Read Only
         OralExaminer:
           type: boolean
+          description: Read Only
+        DateJoined:
+          type: string
+          description: Read only
+        Active:
+          type: boolean
+          description: Indicates whether the user is active and should be allowed to login
+        PasswordResetRequired:
+          type: boolean
+          description: Indicates whether the user has to reset their password.
+        DateOfBirth:
+          type: string
+        Nationality:
+          type: string
+          description: ISO 3166 - Alpha 2
+        Gender:
+          type: string
+          enum:
+            - Male
+            - Female
+            - Other
+            - Non-Binary
       required:
         - UserLoginZ
         - FirstName
@@ -381,11 +485,14 @@ components:
         - EMail
         - WrittenExaminer
         - OralExaminer
-      x-tags:
-        - Models
+        - DateJoined
+        - Active
+        - PasswordResetRequired
     Deployment:
       title: Deployment
       type: object
+      x-tags:
+        - Models
       properties:
         Id:
           type: string
@@ -396,17 +503,20 @@ components:
           type: string
         Time:
           type: string
+          description: 'The start/end timesof the exam. Ex: 09:00 - 12:00, or 14:00 - 16:00'
         Type:
           type: string
           enum:
             - Written
             - Oral
-            - Oral+Written
         ExamLevel:
           type: string
         Function:
           type: string
           description: Is this an enum?
+        Venue:
+          type: string
+          description: 'Ex: Basel Room 1'
       required:
         - Id
         - DeploymentDate
@@ -415,12 +525,13 @@ components:
         - Type
         - ExamLevel
         - Function
-      x-tags:
-        - Models
+        - Venue
     Availability:
       title: Availability
       type: object
       description: 'The availability record, where an examineer can either indicate to be available, or not.'
+      x-tags:
+        - Models
       properties:
         AvailabilityDate:
           type: string
@@ -433,41 +544,14 @@ components:
           description: 'ID = 0 => New Object'
         AvailabilityDateISO:
           type: string
+        Comment:
+          type: string
       required:
         - AvailabilityDate
         - AM
         - PM
         - Id
         - AvailabilityDateISO
-      x-tags:
-        - Models
-    ClaimExam:
-      title: ClaimExam
-      type: object
-      properties:
-        Id:
-          type: string
-          description: 'ID = 0 => New Object'
-        UserData:
-          $ref: '#/components/schemas/ClaimPersonalInfo'
-        MiscellaneousClaims:
-          type: array
-          items:
-            $ref: '#/components/schemas/ClaimMisc'
-        Comment:
-          type: string
-        DeploymentClaims:
-          type: array
-          items:
-            $ref: '#/components/schemas/ClaimDeployment'
-      required:
-        - Id
-        - UserData
-        - MiscellaneousClaims
-        - Comment
-        - DeploymentClaims
-      x-tags:
-        - Models
     ClaimCoordination:
       title: ClaimCoordination
       type: object
@@ -528,6 +612,8 @@ components:
     ClaimCoordinationMeeting:
       title: ClaimCoordinationMeeting
       type: object
+      x-tags:
+        - Models
       properties:
         Id:
           type: string
@@ -542,8 +628,6 @@ components:
           type: string
         Claim:
           type: boolean
-        Lunch:
-          type: boolean
         Travel:
           type: number
       required:
@@ -553,10 +637,7 @@ components:
         - ExamLevel
         - ExamName
         - Claim
-        - Lunch
         - Travel
-      x-tags:
-        - Models
     ClaimMisc:
       title: ClaimMisc
       type: object
@@ -604,16 +685,16 @@ components:
         - BankOrPost
       x-tags:
         - Models
-    ClaimDeployment:
-      title: ClaimDeployment
+    ClaimDeploymentOral:
+      title: ClaimDeploymentOral
       type: object
+      x-tags:
+        - Models
       properties:
         Id:
           type: string
           description: 'ID = 0 => New Object'
         Travel:
-          type: number
-        Lunch:
           type: number
         ExamName:
           type: string
@@ -623,22 +704,26 @@ components:
           type: string
         DeploymentDate:
           type: string
-        AM:
+        ClaimHours:
           type: number
-        PM:
-          type: number
+        Venue:
+          type: string
+        Function:
+          type: string
+          description: Could be an enum
+        ReserveSE:
+          type: boolean
       required:
         - Id
         - Travel
-        - Lunch
         - ExamName
         - ExamLevel
         - DeploymentDateISO
         - DeploymentDate
-        - AM
-        - PM
-      x-tags:
-        - Models
+        - ClaimHours
+        - Venue
+        - Function
+        - ReserveSE
     ResponseOverviewPage:
       title: ResponseOverviewPage
       type: object
@@ -698,3 +783,66 @@ components:
         - Data
       x-tags:
         - Responses
+    ClaimExam:
+      title: ClaimExam
+      type: object
+      properties:
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        UserData:
+          $ref: '#/components/schemas/ClaimPersonalInfo'
+        MiscellaneousClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimMisc'
+        Comment:
+          type: string
+        DeploymentClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimDeployment'
+      required:
+        - Id
+        - UserData
+        - MiscellaneousClaims
+        - Comment
+        - DeploymentClaims
+      x-tags:
+        - Models
+    ClaimDeploymentWritten:
+      title: ClaimDeploymentWritten
+      type: object
+      x-tags:
+        - Models
+      properties:
+        Id:
+          type: string
+          description: 'ID = 0 => New Object'
+        Travel:
+          type: number
+        ExamName:
+          type: string
+        ExamLevel:
+          type: string
+        DeploymentDateISO:
+          type: string
+        DeploymentDate:
+          type: string
+        Venue:
+          type: string
+        Function:
+          type: string
+          description: Could be an enum
+        IsClaiming:
+          type: boolean
+      required:
+        - Id
+        - Travel
+        - ExamName
+        - ExamLevel
+        - DeploymentDateISO
+        - DeploymentDate
+        - Venue
+        - Function
+        - IsClaiming
