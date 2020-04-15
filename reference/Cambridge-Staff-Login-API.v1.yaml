@@ -23,7 +23,8 @@ paths:
   /STValidateLogin:
     get:
       summary: STValidateLogin
-      tags: []
+      tags:
+        - API
       responses:
         '200':
           description: OK
@@ -64,7 +65,8 @@ paths:
   /STEmailAvailabilityRecord:
     get:
       summary: STEmailAvailabilityRecord
-      tags: []
+      tags:
+        - API
       responses:
         '200':
           description: OK
@@ -102,7 +104,8 @@ paths:
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
-      tags: []
+      tags:
+        - API
       responses:
         '200':
           description: OK
@@ -169,6 +172,8 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/Availability'
+      tags:
+        - API
   /STClaimExams:
     post:
       summary: STClaimExams
@@ -207,6 +212,8 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/ClaimExam'
+      tags:
+        - API
   /STClaimCoordination:
     post:
       summary: STClaimCoordination
@@ -243,6 +250,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ClaimCoordination'
+      tags:
+        - API
   /STUpdatePersonalInformation:
     post:
       summary: STUpdatePersonalInformation
@@ -279,6 +288,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PersonalInformation'
+      tags:
+        - API
 components:
   schemas:
     ResponseLogin:
@@ -299,6 +310,8 @@ components:
         - Status
         - ErrorText
         - Data
+      x-tags:
+        - Responses
     StatusCode:
       type: string
       enum:
@@ -313,6 +326,8 @@ components:
         - 400: Bad Request -> request cannot be processed due to invalid input parameters
         - 500: Internal Server Error -> unexpected condition was encountered
       title: StatusCode
+      x-tags:
+        - Models
     PersonalInformation:
       title: PersonalInformation
       type: object
@@ -366,6 +381,8 @@ components:
         - EMail
         - WrittenExaminer
         - OralExaminer
+      x-tags:
+        - Models
     Deployment:
       title: Deployment
       type: object
@@ -398,6 +415,8 @@ components:
         - Type
         - ExamLevel
         - Function
+      x-tags:
+        - Models
     Availability:
       title: Availability
       type: object
@@ -420,6 +439,8 @@ components:
         - PM
         - Id
         - AvailabilityDateISO
+      x-tags:
+        - Models
     ClaimExam:
       title: ClaimExam
       type: object
@@ -445,6 +466,8 @@ components:
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
+      x-tags:
+        - Models
     ClaimCoordination:
       title: ClaimCoordination
       type: object
@@ -470,6 +493,8 @@ components:
         - MiscellaneousClaims
         - Comment
         - CoordinationMeetingClaims
+      x-tags:
+        - Models
     Certification:
       title: Certification
       type: object
@@ -498,6 +523,8 @@ components:
         - Active
         - CoordinationDate
         - CoordinationDateISO
+      x-tags:
+        - Models
     ClaimCoordinationMeeting:
       title: ClaimCoordinationMeeting
       type: object
@@ -528,6 +555,8 @@ components:
         - Claim
         - Lunch
         - Travel
+      x-tags:
+        - Models
     ClaimMisc:
       title: ClaimMisc
       type: object
@@ -543,6 +572,8 @@ components:
         - Id
         - Description
         - Amount
+      x-tags:
+        - Models
     ClaimPersonalInfo:
       title: ClaimPersonalInfo
       type: object
@@ -571,6 +602,8 @@ components:
         - ClearingNr
         - OENr
         - BankOrPost
+      x-tags:
+        - Models
     ClaimDeployment:
       title: ClaimDeployment
       type: object
@@ -604,6 +637,8 @@ components:
         - DeploymentDate
         - AM
         - PM
+      x-tags:
+        - Models
     ResponseOverviewPage:
       title: ResponseOverviewPage
       type: object
@@ -641,6 +676,8 @@ components:
         - Status
         - ErrorText
         - Data
+      x-tags:
+        - Responses
     ResponseGeneric:
       title: ResponseGeneric
       type: object
@@ -659,3 +696,5 @@ components:
         - Status
         - ErrorText
         - Data
+      x-tags:
+        - Responses
