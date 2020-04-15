@@ -100,6 +100,7 @@ paths:
           in: query
           name: APIKey
           required: true
+      description: Email a copy of the availabilities
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
@@ -326,9 +327,9 @@ paths:
           name: APIKey
           required: true
       description: 'Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. '
-  /STChangePassword:
+  /STUpdatePassword:
     get:
-      summary: STEmailAvailabilityRecord
+      summary: STUpdatePassword
       tags:
         - API
       responses:
@@ -366,6 +367,7 @@ paths:
           name: Password
           required: true
       description: Update the password of an user. Should be POST?
+    parameters: []
 components:
   schemas:
     ResponseLogin:
