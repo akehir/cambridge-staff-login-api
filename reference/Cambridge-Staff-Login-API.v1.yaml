@@ -100,7 +100,7 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Email a copy of the availabilities
+      description: Email a copy of the availabilities. Includes a pdf attached to the email.
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
@@ -788,6 +788,9 @@ components:
     ClaimExam:
       title: ClaimExam
       type: object
+      x-tags:
+        - Models
+      description: ''
       properties:
         Id:
           type: string
@@ -803,15 +806,15 @@ components:
         DeploymentClaims:
           type: array
           items:
-            $ref: '#/components/schemas/ClaimDeployment'
+            oneOf:
+              - $ref: '#/components/schemas/ClaimDeploymentOral'
+              - $ref: '#/components/schemas/ClaimDeploymentWritten'
       required:
         - Id
         - UserData
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
-      x-tags:
-        - Models
     ClaimDeploymentWritten:
       title: ClaimDeploymentWritten
       type: object
