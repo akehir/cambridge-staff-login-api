@@ -6,6 +6,7 @@ info:
     name: Raphael Ochsenbein
     url: 'https://viu.ch'
     email: ro@viu.ch
+  description: The StaffLogin API Provide by ESOL ASSiST.
 servers:
   - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
     description: TEST_BASEL
@@ -19,6 +20,8 @@ servers:
     description: TEST_GENEVA
   - url: 'https://esoldataservice.cambridgeesol-ge.ch:6100/ESOLDataServices.svc'
     description: PROD_GENEVA
+tags:
+  - name: API
 paths:
   /STValidateLogin:
     get:
@@ -33,7 +36,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseLogin'
       operationId: get-STValidateLogin
-      requestBody: {}
       parameters:
         - schema:
             type: string
@@ -61,7 +63,7 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Log an user in. Should be post?
+      description: Log an user in.
   /STEmailAvailabilityRecord:
     post:
       summary: STEmailAvailabilityRecord
@@ -119,6 +121,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseOverviewPage'
       operationId: get-STGetOverviewPage
+      description: All the information for displaying the generic pages / data to the invigilators.
     parameters:
       - schema:
           type: string
@@ -179,6 +182,7 @@ paths:
                 $ref: '#/components/schemas/Availability'
       tags:
         - API
+      description: The endpoint where invigilators can update their availability.
   /STClaimExams:
     post:
       summary: STClaimExams
@@ -258,6 +262,7 @@ paths:
               $ref: '#/components/schemas/ClaimCoordination'
       tags:
         - API
+      description: The endpoint where invigilators can claim the coordination.
   /STUpdatePersonalInformation:
     post:
       summary: STUpdatePersonalInformation
@@ -296,6 +301,7 @@ paths:
               $ref: '#/components/schemas/PersonalInformation'
       tags:
         - API
+      description: 'The endpoint, where inviligators can update their personal information.'
   /STEmailOTP:
     post:
       summary: STEmailOTP
@@ -315,12 +321,9 @@ paths:
             schema:
               type: object
               properties:
-                OTP:
-                  type: string
                 Email:
                   $ref: '#/components/schemas/Email'
               required:
-                - OTP
                 - Email
       parameters:
         - schema:
@@ -342,6 +345,12 @@ paths:
             type: string
           in: query
           name: APIKey
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: OTP
+          description: ''
           required: true
       description: 'Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. '
     parameters: []
@@ -393,12 +402,49 @@ paths:
               required:
                 - Password
                 - OTP
+  /STRequestOTP:
+    get:
+      summary: STRequestOTP
+      tags:
+        - API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOTP'
+      operationId: get-STRequestOTP
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: LoginName
+          description: Email address
+          required: true
+        - schema:
+            type: string
+            enum:
+              - EN
+              - DE
+              - FR
+          in: query
+          name: Language
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+      description: Request an OTP for resetting the password.
 components:
   schemas:
     ResponseLogin:
       title: ResponseLogin
       type: object
       description: The Response of the Login Call
+      x-tags:
+        - Responses
       properties:
         Status:
           $ref: '#/components/schemas/StatusCode'
@@ -408,13 +454,11 @@ components:
         Data:
           type: array
           items:
-            $ref: '#/components/schemas/PersonalInformation'
+            $ref: '#/components/schemas/User'
       required:
         - Status
         - ErrorText
         - Data
-      x-tags:
-        - Responses
     StatusCode:
       type: string
       enum:
@@ -793,10 +837,31 @@ components:
         - Status
         - ErrorText
         - Data
+    ResponseOTP:
+      title: ResponseOTP
+      type: object
+      description: The Response of the OTP Request
+      x-tags:
+        - Responses
+      properties:
+        Status:
+          $ref: '#/components/schemas/StatusCode'
+        ErrorText:
+          type: string
+          description: ErrorText
+        Data:
+          type: string
+          description: The OTP to be used.
+      required:
+        - Status
+        - ErrorText
+        - Data
     ResponseGeneric:
       title: ResponseGeneric
       type: object
-      description: The Response of the Email Availability Record
+      description: 'The generic reponse used by various API calls (no data, just status). For exemple, sending Emails.'
+      x-tags:
+        - Responses
       properties:
         Status:
           $ref: '#/components/schemas/StatusCode'
@@ -805,14 +870,11 @@ components:
           description: ErrorText
         Data:
           type: array
-          items:
-            type: 'null'
+          items: {}
       required:
         - Status
         - ErrorText
         - Data
-      x-tags:
-        - Responses
     ClaimExam:
       title: ClaimExam
       type: object
