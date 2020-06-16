@@ -63,23 +63,11 @@ paths:
           required: true
       description: Log an user in. Should be post?
   /STEmailAvailabilityRecord:
-    get:
+    post:
       summary: STEmailAvailabilityRecord
+      operationId: post-STEmailAvailabilityRecord
       tags:
         - API
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOverviewPage'
-        '':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseGeneric'
-      operationId: get-STEmailAvailabilityRecord
       parameters:
         - schema:
             type: string
@@ -100,7 +88,24 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Email a copy of the availabilities. Includes a pdf attached to the email.
+      description: Email a copy of the availabilities. Includes a pdf attached
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseGeneric'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  $ref: '#/components/schemas/Email'
+              required:
+                - Email
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
@@ -291,9 +296,9 @@ paths:
               $ref: '#/components/schemas/PersonalInformation'
       tags:
         - API
-  /STResendPassword:
-    get:
-      summary: STResendPassword
+  /STEmailOTP:
+    post:
+      summary: STEmailOTP
       tags:
         - API
       responses:
@@ -304,7 +309,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseGeneric'
       operationId: get-STResendPassword
-      requestBody: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                OTP:
+                  type: string
+                Email:
+                  $ref: '#/components/schemas/Email'
+              required:
+                - OTP
+                - Email
       parameters:
         - schema:
             type: string
@@ -327,8 +344,9 @@ paths:
           name: APIKey
           required: true
       description: 'Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. '
+    parameters: []
   /STUpdatePassword:
-    get:
+    post:
       summary: STUpdatePassword
       tags:
         - API
@@ -360,14 +378,21 @@ paths:
           in: query
           name: APIKey
           required: true
-        - schema:
-            type: string
-            minLength: 6
-          in: query
-          name: Password
-          required: true
-      description: Update the password of an user. Should be POST?
-    parameters: []
+      description: Update the password of an user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Password:
+                  type: string
+                  format: password
+                OTP:
+                  type: string
+              required:
+                - Password
+                - OTP
 components:
   schemas:
     ResponseLogin:
@@ -413,8 +438,6 @@ components:
       x-tags:
         - Models
       properties:
-        UserLoginZ:
-          type: string
         FirstName:
           type: string
         LastName:
@@ -481,7 +504,6 @@ components:
             - Other
             - Non-Binary
       required:
-        - UserLoginZ
         - FirstName
         - LastName
         - EMail
@@ -557,6 +579,8 @@ components:
     ClaimCoordination:
       title: ClaimCoordination
       type: object
+      x-tags:
+        - Models
       properties:
         Id:
           type: string
@@ -573,14 +597,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ClaimCoordinationMeeting'
+        Email:
+          $ref: '#/components/schemas/Email'
       required:
         - Id
         - UserData
         - MiscellaneousClaims
         - Comment
         - CoordinationMeetingClaims
-      x-tags:
-        - Models
+        - Email
     Certification:
       title: Certification
       type: object
@@ -730,6 +755,8 @@ components:
       title: ResponseOverviewPage
       type: object
       description: The Response of the Overview Page Call
+      x-tags:
+        - Responses
       properties:
         Status:
           $ref: '#/components/schemas/StatusCode'
@@ -753,18 +780,19 @@ components:
                 $ref: '#/components/schemas/Availability'
               Deployment:
                 $ref: '#/components/schemas/Deployment'
+              Invigilator:
+                $ref: '#/components/schemas/PersonalInformation'
             required:
               - Certifications
               - CoordinationClaim
               - ExamClaim
               - Availability
               - Deployment
+              - Invigilator
       required:
         - Status
         - ErrorText
         - Data
-      x-tags:
-        - Responses
     ResponseGeneric:
       title: ResponseGeneric
       type: object
@@ -809,12 +837,15 @@ components:
             oneOf:
               - $ref: '#/components/schemas/ClaimDeploymentOral'
               - $ref: '#/components/schemas/ClaimDeploymentWritten'
+        Email:
+          $ref: '#/components/schemas/Email'
       required:
         - Id
         - UserData
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
+        - Email
     ClaimDeploymentWritten:
       title: ClaimDeploymentWritten
       type: object
@@ -851,3 +882,39 @@ components:
         - Venue
         - Function
         - IsClaiming
+    User:
+      title: User
+      type: object
+      properties:
+        UserLoginZ:
+          type: string
+        EMail:
+          type: string
+          format: email
+          example: test@example.org
+      required:
+        - UserLoginZ
+        - EMail
+    Email:
+      title: Email
+      type: object
+      description: The Email Message to be sent
+      properties:
+        Body:
+          type: string
+          description: The HTML Body of the Email
+        Subject:
+          type: string
+        Recipient:
+          type: string
+          format: email
+        CarbonCopy:
+          type: string
+          format: email
+        BlindCarbonCopy:
+          type: string
+          format: email
+      required:
+        - Body
+        - Subject
+        - Recipient
