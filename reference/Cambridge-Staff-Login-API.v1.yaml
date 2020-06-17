@@ -90,7 +90,7 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Email a copy of the availabilities. Includes a pdf attached
+      description: 'Email a copy of the availabilities. Can be GET request, since Email is not included.'
       responses:
         '200':
           description: OK
@@ -103,11 +103,6 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                Email:
-                  $ref: '#/components/schemas/Email'
-              required:
-                - Email
   /STGetOverviewPageInformation:
     get:
       summary: STGetOverviewPageInformation
@@ -321,10 +316,14 @@ paths:
             schema:
               type: object
               properties:
-                Email:
-                  $ref: '#/components/schemas/Email'
+                BaseUrl:
+                  type: string
+                  description: 'Example: http://test.cambridgeenglish-basel.ch/staff/token/${OTP}; where ${OTP} would be replaced / set by the backend.'
+                  format: uri
               required:
-                - Email
+                - BaseUrl
+            examples:
+              example-1: {}
       parameters:
         - schema:
             type: string
@@ -346,13 +345,10 @@ paths:
           in: query
           name: APIKey
           required: true
-        - schema:
-            type: string
-          in: query
-          name: OTP
-          description: ''
-          required: true
-      description: 'Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. '
+      description: |-
+        Send an Email with the password (or a temporary token for a one time login, or a randomly generated password) to the user. The OTP in the link (could) be encoded in a signed JWT from the backend. That would prevent OTP forgery (and by including a timestamp, it would also be possible to have expiry).
+
+        Can be GET request, since Email is not included. Then BaseUrl would be a query param.
     parameters: []
   /STUpdatePassword:
     post:
@@ -387,7 +383,7 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Update the password of an user.
+      description: Update the password of an user. OTP has to match the previously provided OTP.
       requestBody:
         content:
           application/json:
@@ -436,7 +432,7 @@ paths:
           in: query
           name: APIKey
           required: true
-      description: Request an OTP for resetting the password.
+      description: Request an OTP for resetting the password. Might not be necessary since ESOL ASSiST is generating the OTP by itself.
 components:
   schemas:
     ResponseLogin:
@@ -917,15 +913,12 @@ components:
             oneOf:
               - $ref: '#/components/schemas/ClaimDeploymentOral'
               - $ref: '#/components/schemas/ClaimDeploymentWritten'
-        Email:
-          $ref: '#/components/schemas/Email'
       required:
         - Id
         - UserData
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
-        - Email
     ClaimDeploymentWritten:
       title: ClaimDeploymentWritten
       type: object
