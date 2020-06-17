@@ -585,6 +585,10 @@ components:
         Venue:
           type: string
           description: 'Ex: Basel Room 1'
+        Region:
+          type: string
+        VenueAddress:
+          type: string
       required:
         - Id
         - DeploymentDate
@@ -594,6 +598,8 @@ components:
         - ExamLevel
         - Function
         - Venue
+        - Region
+        - VenueAddress
     Availability:
       title: Availability
       type: object
@@ -614,12 +620,21 @@ components:
           type: string
         Comment:
           type: string
+        Region:
+          type: string
+        IsSpeaking:
+          type: boolean
+        IsWritten:
+          type: integer
       required:
         - AvailabilityDate
         - AM
         - PM
         - Id
         - AvailabilityDateISO
+        - Region
+        - IsSpeaking
+        - IsWritten
     ClaimCoordination:
       title: ClaimCoordination
       type: object
@@ -784,6 +799,8 @@ components:
           description: Could be an enum
         ReserveSE:
           type: boolean
+        Region:
+          type: string
       required:
         - Id
         - Travel
@@ -795,6 +812,7 @@ components:
         - Venue
         - Function
         - ReserveSE
+        - Region
     ResponseOverviewPage:
       title: ResponseOverviewPage
       type: object
