@@ -20,6 +20,10 @@ servers:
     description: TEST_GENEVA
   - url: 'https://esoldataservice.cambridgeesol-ge.ch:6100/ESOLDataServices.svc'
     description: PROD_GENEVA
+  - url: 'http://esol365.iota.ch/ESOLDataServices.svc'
+    description: HTTP_CLOUD
+  - url: 'https://esol365.iota.ch/ESOLDataServices.svc'
+    description: HTTPS_CLOUD
 tags:
   - name: API
 paths:
@@ -320,10 +324,9 @@ paths:
                   type: string
                   description: 'Example: http://test.cambridgeenglish-basel.ch/staff/token/${OTP}; where ${OTP} would be replaced / set by the backend.'
                   format: uri
+                  example: 'https://test.com'
               required:
                 - BaseUrl
-            examples:
-              example-1: {}
       parameters:
         - schema:
             type: string
@@ -433,6 +436,31 @@ paths:
           name: APIKey
           required: true
       description: Request an OTP for resetting the password. Might not be necessary since ESOL ASSiST is generating the OTP by itself.
+  /STGetNationalityList:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nationality'
+      operationId: get-STGetNationalities
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: APIKey
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: Language
+          required: true
+      description: Get the list of of Nationalitys to use in the forms.
+    parameters: []
 components:
   schemas:
     ResponseLogin:
@@ -585,6 +613,10 @@ components:
           type: string
         VenueAddress:
           type: string
+        IsSpeaking:
+          type: boolean
+        IsWritten:
+          type: boolean
       required:
         - Id
         - DeploymentDate
@@ -621,7 +653,9 @@ components:
         IsSpeaking:
           type: boolean
         IsWritten:
-          type: integer
+          type: boolean
+        EmployeeID:
+          type: string
       required:
         - AvailabilityDate
         - AM
@@ -822,31 +856,29 @@ components:
           type: string
           description: ErrorText
         Data:
-          type: array
-          items:
-            type: object
-            properties:
-              Certifications:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Certification'
-              CoordinationClaim:
-                $ref: '#/components/schemas/ClaimCoordination'
-              ExamClaim:
-                $ref: '#/components/schemas/ClaimExam'
-              Availability:
-                $ref: '#/components/schemas/Availability'
-              Deployment:
-                $ref: '#/components/schemas/Deployment'
-              Invigilator:
-                $ref: '#/components/schemas/PersonalInformation'
-            required:
-              - Certifications
-              - CoordinationClaim
-              - ExamClaim
-              - Availability
-              - Deployment
-              - Invigilator
+          type: object
+          required:
+            - Certifications
+            - CoordinationClaim
+            - ExamClaim
+            - AvailabilityList
+            - DeploymentList
+            - Invigilator
+          properties:
+            Certifications:
+              type: array
+              items:
+                $ref: '#/components/schemas/Certification'
+            CoordinationClaim:
+              $ref: '#/components/schemas/ClaimCoordination'
+            ExamClaim:
+              $ref: '#/components/schemas/ClaimExam'
+            AvailabilityList:
+              $ref: '#/components/schemas/Availability'
+            DeploymentList:
+              $ref: '#/components/schemas/Deployment'
+            Invigilator:
+              $ref: '#/components/schemas/PersonalInformation'
       required:
         - Status
         - ErrorText
@@ -991,3 +1023,19 @@ components:
         - Body
         - Subject
         - Recipient
+    Nationality:
+      title: Nationality
+      type: object
+      properties:
+        NationalityZ:
+          type: number
+          description: |
+            The ID of the nationality
+        Nationality:
+          type: string
+          description: The name of the nationality as displayed in the UI
+        Lang:
+          type: string
+        Region:
+          type: number
+  securitySchemes: {}
