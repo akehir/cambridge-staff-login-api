@@ -8,10 +8,10 @@ info:
     email: ro@viu.ch
   description: The StaffLogin API Provide by ESOL ASSiST.
 servers:
-  - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
-    description: TEST_BASEL
-  - url: 'https://esoldataservice.cambridgeenglish-basel.ch:3443/ESOLDataServices.svc'
-    description: PROD_BASEL
+  - description: HTTPS_CLOUD
+    url: 'https://esol365.iota.ch/ESOLDataServices.svc'
+  - description: HTTPS_CLOUD
+    url: 'http://esol365.iota.ch/ESOLDataServices.svc'
   - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
     description: TEST_JURA
   - url: 'https://esoldataservice.cambridgeenglish-basel.ch:3443/ESOLDataServices.svc'
@@ -20,10 +20,10 @@ servers:
     description: TEST_GENEVA
   - url: 'https://esoldataservice.cambridgeesol-ge.ch:6100/ESOLDataServices.svc'
     description: PROD_GENEVA
-  - url: 'http://esol365.iota.ch/ESOLDataServices.svc'
-    description: HTTP_CLOUD
-  - url: 'https://esol365.iota.ch/ESOLDataServices.svc'
-    description: HTTPS_CLOUD
+  - url: 'https://test-esoldataservice.cambridgeenglish-basel.ch:1443/ESOLDataServices.svc'
+    description: TEST_BASEL
+  - url: 'https://esoldataservice.cambridgeenglish-basel.ch:3443/ESOLDataServices.svc'
+    description: PROD_BASEL
 tags:
   - name: API
 paths:
