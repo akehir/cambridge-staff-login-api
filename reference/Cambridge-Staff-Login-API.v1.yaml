@@ -557,7 +557,7 @@ components:
           type: boolean
           description: Indicates whether the user is active and should be allowed to login
         PasswordResetRequired:
-          type: boolean
+          type: number
           description: Indicates whether the user has to reset their password.
         DateOfBirth:
           type: string
@@ -571,6 +571,10 @@ components:
             - Female
             - Other
             - Non-Binary
+        AccountNo:
+          type: string
+        ClearingNo:
+          type: string
       required:
         - FirstName
         - LastName
@@ -684,11 +688,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ClaimCoordinationMeeting'
+        Claimed:
+          type: number
       required:
         - Id
         - MiscellaneousClaims
         - Comment
         - CoordinationMeetingClaims
+        - Claimed
     Certification:
       title: Certification
       type: object
@@ -937,11 +944,14 @@ components:
             oneOf:
               - $ref: '#/components/schemas/ClaimDeploymentOral'
               - $ref: '#/components/schemas/ClaimDeploymentWritten'
+        IsClaimed:
+          type: number
       required:
         - Id
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
+        - IsClaimed
     ClaimDeploymentWritten:
       title: ClaimDeploymentWritten
       type: object
