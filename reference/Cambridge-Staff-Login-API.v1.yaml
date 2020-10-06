@@ -588,7 +588,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         DeploymentDate:
           type: string
         DeploymentDateISO:
@@ -643,7 +643,7 @@ components:
           type: boolean
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         AvailabilityDateISO:
           type: string
         Comment:
@@ -674,8 +674,6 @@ components:
         Id:
           type: string
           description: id 0 = new
-        UserData:
-          $ref: '#/components/schemas/ClaimPersonalInfo'
         MiscellaneousClaims:
           type: array
           items:
@@ -686,15 +684,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ClaimCoordinationMeeting'
-        Email:
-          $ref: '#/components/schemas/Email'
       required:
         - Id
-        - UserData
         - MiscellaneousClaims
         - Comment
         - CoordinationMeetingClaims
-        - Email
     Certification:
       title: Certification
       type: object
@@ -702,7 +696,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         ExamLevel:
           type: string
         TrainingDate:
@@ -733,7 +727,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         CoordinationMeetingDate:
           type: string
         CoordinationMeetingDateISO:
@@ -760,7 +754,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         Description:
           type: string
         Amount:
@@ -777,7 +771,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         FirstName:
           type: string
         LastName:
@@ -809,7 +803,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         Travel:
           type: number
         ExamName:
@@ -930,9 +924,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
-        UserData:
-          $ref: '#/components/schemas/ClaimPersonalInfo'
+          description: ID = 0 => New Object
         MiscellaneousClaims:
           type: array
           items:
@@ -947,7 +939,6 @@ components:
               - $ref: '#/components/schemas/ClaimDeploymentWritten'
       required:
         - Id
-        - UserData
         - MiscellaneousClaims
         - Comment
         - DeploymentClaims
@@ -959,7 +950,7 @@ components:
       properties:
         Id:
           type: string
-          description: 'ID = 0 => New Object'
+          description: ID = 0 => New Object
         Travel:
           type: number
         ExamName:
